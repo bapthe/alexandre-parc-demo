@@ -1,0 +1,1112 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ALEXANDRE SA — Gestion du parc de démo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=Inter:wght@400;500;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #EAEBE1;
+    --surface: #FBFBF7;
+    --surface-2: #F2F2EA;
+    --border: #C9CABB;
+    --border-strong: #9B9C8A;
+    --ink: #22241C;
+    --ink-muted: #5C5D4E;
+    --primary: #33452E;
+    --primary-ink: #FBFBF7;
+    --accent: #B85E22;
+    --accent-bg: #F5E4D3;
+    --st-dispo: #3F7D5C;
+    --st-dispo-bg: #E1EEE5;
+    --st-demo: #B85E22;
+    --st-demo-bg: #F5E4D3;
+    --st-maint: #45586B;
+    --st-maint-bg: #E2E7ED;
+    --st-indispo: #7C7C6E;
+    --st-indispo-bg: #E6E6DC;
+    --danger: #A2382E;
+    --radius: 3px;
+    font-synthesis: none;
+  }
+
+  :root:not([data-theme="light"]) {
+    @media (prefers-color-scheme: dark) {
+      --bg: #191A15; --surface: #22241D; --surface-2: #272921;
+      --border: #3B3D31; --border-strong: #52543F; --ink: #ECEBDE; --ink-muted: #A4A594;
+      --primary: #8FAF83; --primary-ink: #191A15; --accent: #E08A46; --accent-bg: #332821;
+      --st-dispo: #7FBF9C; --st-dispo-bg: #253229; --st-demo: #E08A46; --st-demo-bg: #332821;
+      --st-maint: #92AAC4; --st-maint-bg: #232A32; --st-indispo: #A9AA98; --st-indispo-bg: #2A2B24;
+      --danger: #D9695D;
+    }
+  }
+  :root[data-theme="dark"] {
+      --bg: #191A15; --surface: #22241D; --surface-2: #272921;
+      --border: #3B3D31; --border-strong: #52543F; --ink: #ECEBDE; --ink-muted: #A4A594;
+      --primary: #8FAF83; --primary-ink: #191A15; --accent: #E08A46; --accent-bg: #332821;
+      --st-dispo: #7FBF9C; --st-dispo-bg: #253229; --st-demo: #E08A46; --st-demo-bg: #332821;
+      --st-maint: #92AAC4; --st-maint-bg: #232A32; --st-indispo: #A9AA98; --st-indispo-bg: #2A2B24;
+      --danger: #D9695D;
+  }
+
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink); font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; }
+  ::selection { background: var(--accent); color: var(--primary-ink); }
+  .headline, h1, h2, h3, .stat-num { font-family: 'Big Shoulders Display', sans-serif; font-weight: 700; letter-spacing: 0.01em; line-height: 0.95; }
+  .code { font-family: 'Space Mono', monospace; font-size: 0.78rem; color: var(--ink-muted); }
+  a, button { font-family: inherit; }
+
+  header.topbar { display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.1rem 1.5rem; border-bottom: 1px solid var(--border); flex-wrap: wrap; }
+  .brand { display: flex; align-items: center; gap: 0.9rem; min-width: 0; }
+  .brand-logo { width: min(290px, 42vw); max-height: 64px; object-fit: contain; object-position: left center; flex: none; }
+  .brand-text h1 { font-size: 1.5rem; margin: 0; }
+  .brand-text p { margin: 0; font-size: 0.78rem; color: var(--ink-muted); }
+  .topbar-right { display: flex; align-items: center; gap: 0.8rem; }
+  .whoami { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--ink-muted); }
+  .whoami b { color: var(--ink); font-weight: 600; }
+  .role-pill { font-size: 0.68rem; font-weight: 700; padding: 0.12rem 0.45rem; border-radius: 999px; background: var(--surface-2); border: 1px solid var(--border-strong); }
+  .role-pill.admin { color: var(--accent); border-color: var(--accent); }
+
+  .btn { appearance: none; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); padding: 0.55rem 0.9rem; border-radius: var(--radius); font-size: 0.88rem; font-weight: 600; cursor: pointer; transition: background 0.12s ease, border-color 0.12s ease; }
+  .btn:hover { border-color: var(--ink); }
+  .btn-primary { background: var(--primary); color: var(--primary-ink); border-color: var(--primary); }
+  .btn-primary:hover { filter: brightness(1.08); }
+  .btn-danger { background: transparent; color: var(--danger); border-color: var(--danger); }
+  .btn-ghost { background: transparent; border-color: transparent; color: var(--ink-muted); }
+  .btn-ghost:hover { color: var(--ink); }
+  .btn-sm { padding: 0.35rem 0.6rem; font-size: 0.78rem; }
+  .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  nav.tabs { display: flex; gap: 0.25rem; padding: 0 1.5rem; border-bottom: 1px solid var(--border); overflow-x: auto; }
+  nav.tabs button { appearance: none; background: none; border: none; border-bottom: 2px solid transparent; padding: 0.85rem 0.6rem; font-size: 0.92rem; font-weight: 600; color: var(--ink-muted); cursor: pointer; white-space: nowrap; }
+  nav.tabs button.active { color: var(--ink); border-bottom-color: var(--accent); }
+  nav.tabs button[hidden] { display: none; }
+
+  main { max-width: 980px; margin: 0 auto; padding: 1.6rem 1.5rem 4rem; }
+  .view { display: none; }
+  .view.active { display: block; }
+  .banner { border: 1px solid var(--border-strong); background: var(--surface-2); border-radius: var(--radius); padding: 0.7rem 0.9rem; font-size: 0.82rem; color: var(--ink-muted); margin-bottom: 1.2rem; }
+
+  .stat-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0.7rem; margin-bottom: 1.8rem; }
+  .stat-plate { border: 1px solid var(--border-strong); border-radius: var(--radius); padding: 0.9rem 1rem; background: var(--surface); position: relative; }
+  .stat-plate::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--plate-color, var(--primary)); border-radius: var(--radius) var(--radius) 0 0; }
+  .stat-num { font-size: 2.3rem; color: var(--ink); }
+  .stat-label { font-size: 0.78rem; color: var(--ink-muted); margin-top: 0.15rem; }
+
+  section.block { margin-bottom: 2rem; }
+  section.block h2 { font-size: 1.05rem; margin: 0 0 0.7rem; color: var(--ink); }
+  .block-sub { font-size: 0.8rem; color: var(--ink-muted); margin: -0.4rem 0 0.9rem; }
+
+  table.ledger { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  table.ledger th { text-align: left; font-weight: 600; color: var(--ink-muted); font-size: 0.76rem; padding: 0.4rem 0.6rem; border-bottom: 1px solid var(--border-strong); }
+  table.ledger td { padding: 0.6rem 0.6rem; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.ledger tr:last-child td { border-bottom: none; }
+  .empty-note { color: var(--ink-muted); font-size: 0.86rem; padding: 0.6rem; }
+
+  .toolbar { display: flex; gap: 0.6rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
+  .search-input { flex: 1 1 220px; padding: 0.55rem 0.7rem; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); color: var(--ink); font-size: 0.88rem; }
+  .chip-row { display: flex; gap: 0.4rem; flex-wrap: wrap; }
+  .chip { appearance: none; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink-muted); padding: 0.4rem 0.75rem; border-radius: 999px; font-size: 0.78rem; font-weight: 600; cursor: pointer; }
+  .chip.active { background: var(--primary); border-color: var(--primary); color: var(--primary-ink); }
+
+  .equip-list { display: flex; flex-direction: column; }
+  .equip-row { display: flex; justify-content: space-between; gap: 1rem; padding: 0.9rem 0.1rem; border-bottom: 1px solid var(--border); cursor: pointer; }
+  .equip-row:hover { background: var(--surface-2); }
+  .equip-main { min-width: 0; }
+  .equip-name { font-weight: 700; font-size: 1rem; }
+  .equip-meta { font-size: 0.8rem; color: var(--ink-muted); margin-top: 0.15rem; }
+  .equip-side { text-align: right; flex: none; }
+  .badge { display: inline-block; font-size: 0.72rem; font-weight: 700; padding: 0.22rem 0.55rem; border-radius: 999px; }
+  .badge-disponible { background: var(--st-dispo-bg); color: var(--st-dispo); }
+  .badge-demo { background: var(--st-demo-bg); color: var(--st-demo); }
+  .badge-maintenance { background: var(--st-maint-bg); color: var(--st-maint); }
+  .badge-indisponible { background: var(--st-indispo-bg); color: var(--st-indispo); }
+  .equip-date { font-size: 0.76rem; color: var(--ink-muted); margin-top: 0.3rem; }
+
+  .fab { position: fixed; right: 1.4rem; bottom: 1.4rem; z-index: 20; }
+
+  .overlay { position: fixed; inset: 0; background: rgba(20, 20, 15, 0.45); display: none; align-items: flex-start; justify-content: center; padding: 3vh 1rem; overflow-y: auto; z-index: 30; }
+  .overlay.active { display: flex; }
+  .panel { background: var(--surface); border: 1px solid var(--border-strong); border-radius: var(--radius); width: 100%; max-width: 600px; padding: 1.4rem; }
+  .panel-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; gap: 1rem; }
+  .panel-head h2 { margin: 0; font-size: 1.3rem; }
+  .field { margin-bottom: 0.9rem; }
+  .field label { display: block; font-size: 0.76rem; font-weight: 600; color: var(--ink-muted); margin-bottom: 0.3rem; }
+  .field input, .field select, .field textarea { width: 100%; padding: 0.55rem 0.65rem; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); color: var(--ink); font-size: 0.9rem; font-family: inherit; }
+  .field textarea { min-height: 64px; resize: vertical; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.7rem; }
+  .panel-actions { display: flex; justify-content: space-between; align-items: center; margin-top: 1.2rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+  .panel-actions .right { display: flex; gap: 0.5rem; }
+
+  .section-block { margin-top: 1.3rem; padding-top: 1.1rem; border-top: 1px solid var(--border); }
+  .section-block > label.block-title { display: block; font-size: 0.76rem; font-weight: 600; color: var(--ink-muted); margin-bottom: 0.5rem; text-transform: none; }
+
+  .maint-entry { display: flex; gap: 0.6rem; padding: 0.5rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .maint-entry:last-child { border-bottom: none; }
+  .maint-date { flex: none; color: var(--ink-muted); font-size: 0.78rem; padding-top: 0.1rem; white-space: nowrap; }
+  .maint-add { display: flex; gap: 0.5rem; margin-top: 0.7rem; }
+  .maint-add input { flex: 1; }
+
+  .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 0.5rem; }
+  .cal-head .cal-title { font-size: 0.95rem; font-weight: 700; text-transform: capitalize; }
+  .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 3px; }
+  .cal-dow { font-size: 0.65rem; color: var(--ink-muted); text-align: center; padding-bottom: 0.2rem; font-weight: 600; }
+  .cal-cell { aspect-ratio: 1; display: flex; align-items: center; justify-content: center; font-size: 0.76rem; border-radius: var(--radius); color: var(--ink-muted); }
+  .cal-cell.in-month { color: var(--ink); }
+  .cal-cell.today { box-shadow: inset 0 0 0 1px var(--border-strong); font-weight: 700; }
+  .cal-cell.reserved { background: var(--accent-bg); color: var(--accent); font-weight: 700; cursor: default; }
+
+  .resa-item { padding: 0.55rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+  .resa-item:last-child { border-bottom: none; }
+  .resa-item .r-top { display: flex; justify-content: space-between; gap: 0.5rem; font-weight: 600; }
+  .resa-item .r-meta { color: var(--ink-muted); font-size: 0.78rem; margin-top: 0.1rem; }
+  .resa-form { display: grid; grid-template-columns: 1fr 1fr; gap: 0.6rem; margin-top: 0.7rem; }
+  .resa-form input { grid-column: span 1; }
+  .resa-form .full { grid-column: 1 / -1; }
+  .resa-error { color: var(--danger); font-size: 0.78rem; margin-top: 0.4rem; display: none; }
+
+  .planning-board { display: flex; gap: 1rem; overflow-x: auto; padding-bottom: 0.6rem; }
+  .planning-col { flex: 0 0 210px; min-width: 210px; }
+  .planning-head { padding-bottom: 0.6rem; margin-bottom: 0.7rem; border-bottom: 1px solid var(--border-strong); cursor: pointer; }
+  .planning-head .p-name { font-weight: 700; font-size: 0.92rem; margin-bottom: 0.35rem; }
+  .bulle { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 0.55rem 0.7rem; margin-bottom: 0.6rem; font-size: 0.78rem; }
+  .bulle .b-dates { font-weight: 700; margin-bottom: 0.2rem; }
+  .bulle .b-client { font-weight: 600; }
+  .bulle .b-adresse { color: var(--ink-muted); margin-top: 0.1rem; }
+
+  .people-table td, .people-table th { vertical-align: middle; white-space: nowrap; }
+  .people-table th.perm-col, .people-table td.perm-col { text-align: center; }
+  .perm-check { width: 16px; height: 16px; }
+  .role-select { padding: 0.3rem 0.4rem; border: 1px solid var(--border-strong); border-radius: var(--radius); background: var(--surface); color: var(--ink); font-size: 0.8rem; }
+
+  .id-list { display: flex; flex-direction: column; gap: 0.4rem; margin-bottom: 1rem; }
+  .id-pick { display: flex; justify-content: space-between; align-items: center; padding: 0.6rem 0.8rem; border: 1px solid var(--border-strong); border-radius: var(--radius); cursor: pointer; background: var(--surface); }
+  .id-pick:hover { border-color: var(--ink); }
+
+  @media (max-width: 620px) {
+    .stat-row { grid-template-columns: repeat(2, 1fr); }
+    .field-row, .resa-form { grid-template-columns: 1fr; }
+    .equip-row { flex-direction: column; }
+    .equip-side { text-align: left; }
+  }
+</style>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="config.js"></script>
+</head>
+<body>
+
+<header class="topbar">
+  <div class="brand">
+    <img class="brand-logo" src="logo-alexandre.png" alt="ALEXANDRE SA">
+    <div class="brand-text">
+      <h1>Gestion du parc de démo</h1>
+      <p>Concession ALEXANDRE — matériel de démonstration</p>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="whoami" id="whoami" style="display:none;">
+      <span>Connecté : <b id="whoami-name"></b></span>
+      <span class="role-pill" id="whoami-role"></span>
+      <button class="btn btn-ghost btn-sm" id="btn-switch">Changer</button>
+    </div>
+    <button class="btn btn-primary" id="btn-add-top">+ Ajouter une machine</button>
+  </div>
+</header>
+
+<nav class="tabs">
+  <button class="tab-btn active" data-view="dashboard">Tableau de bord</button>
+  <button class="tab-btn" data-view="materiel">Matériel</button>
+  <button class="tab-btn" data-view="planning">Planning</button>
+  <button class="tab-btn" data-view="parametres" id="tab-parametres" hidden>Paramètres</button>
+</nav>
+
+<main>
+  <div id="banner-holder"></div>
+
+  <section id="view-dashboard" class="view active">
+    <div class="stat-row">
+      <div class="stat-plate" style="--plate-color: var(--primary)"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Machines au total</div></div>
+      <div class="stat-plate" style="--plate-color: var(--st-dispo)"><div class="stat-num" id="stat-dispo">0</div><div class="stat-label">Disponibles</div></div>
+      <div class="stat-plate" style="--plate-color: var(--st-demo)"><div class="stat-num" id="stat-demo">0</div><div class="stat-label">En démonstration</div></div>
+      <div class="stat-plate" style="--plate-color: var(--st-maint)"><div class="stat-num" id="stat-maint">0</div><div class="stat-label">En maintenance</div></div>
+    </div>
+    <section class="block">
+      <h2>Réservations en cours et à venir</h2>
+      <p class="block-sub">30 prochains jours, triées par date de retour.</p>
+      <table class="ledger" id="table-returns">
+        <thead><tr><th>Machine</th><th>Client</th><th>Adresse</th><th>Dates</th></tr></thead>
+        <tbody id="returns-body"></tbody>
+      </table>
+      <div class="empty-note" id="returns-empty" style="display:none;">Aucune réservation en cours ou à venir.</div>
+    </section>
+  </section>
+
+  <section id="view-materiel" class="view">
+    <div class="toolbar"><input class="search-input" id="search" placeholder="Rechercher par nom, référence…"></div>
+    <div class="chip-row" style="margin-bottom: 1.1rem;">
+      <button class="chip active" data-filter="tous">Tous</button>
+      <button class="chip" data-filter="disponible">Disponible</button>
+      <button class="chip" data-filter="demo">En démonstration</button>
+      <button class="chip" data-filter="maintenance">En maintenance</button>
+      <button class="chip" data-filter="indisponible">Indisponible</button>
+    </div>
+    <div class="equip-list" id="equip-list"></div>
+    <div class="empty-note" id="list-empty" style="display:none;">Aucune machine ne correspond à ces critères.</div>
+  </section>
+
+  <section id="view-planning" class="view">
+    <section class="block">
+      <h2>Planning des réservations</h2>
+      <p class="block-sub">Une colonne par machine, cliquez sur un nom pour ouvrir sa fiche.</p>
+      <div class="planning-board" id="planning-board"></div>
+    </section>
+  </section>
+
+  <section id="view-parametres" class="view">
+    <section class="block">
+      <h2>Comptes de l'équipe</h2>
+      <p class="block-sub">Seul un administrateur peut créer un compte. Les commerciaux ne peuvent pas s'inscrire eux-mêmes.</p>
+      <div style="overflow-x:auto;">
+        <table class="ledger people-table" id="people-table"></table>
+      </div>
+      <div class="banner" style="margin-top:1.4rem;">
+        <strong>Création des comptes :</strong> les comptes collaborateurs sont créés dans
+        <strong>Supabase Authentication</strong>, puis leur fiche est ajoutée dans la table
+        <strong>profiles</strong>. Cette méthode évite de stocker ou transmettre les mots de passe dans le navigateur.
+      </div>
+      <p class="block-sub">
+        Administrateurs prévus : <strong>Baptiste</strong> et <strong>Judicael</strong>.
+        Après création de leurs utilisateurs Supabase, associez leur identifiant à leur profil administrateur avec le SQL fourni.
+      </p>
+    </section>
+  </section>
+
+  <button class="btn btn-primary fab" id="btn-add-fab">+</button>
+</main>
+
+<!-- Identity overlay -->
+<div class="overlay" id="id-overlay">
+  <div class="panel">
+    <div id="login-panel" style="display:none;">
+      <div class="panel-head"><h2>Connexion</h2></div>
+      <p class="block-sub" style="margin-top:0;">Accès réservé aux collaborateurs disposant d’un compte ALEXANDRE SA.</p>
+      <div class="field"><label>Adresse email</label><input type="email" id="login-nom" placeholder="Adresse email"></div>
+      <div class="field"><label>Mot de passe</label><input type="password" id="login-pass" placeholder="Mot de passe"></div>
+      <div class="resa-error" id="login-error"></div>
+      <div class="panel-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="show-recovery">Mot de passe oublié ?</button>
+        <div class="right"><button type="button" class="btn btn-primary" id="login-btn">Se connecter</button></div>
+      </div>
+    </div>
+    <div id="recovery-panel" style="display:none;">
+      <div class="panel-head"><h2>Nouveau mot de passe</h2></div>
+      <p class="block-sub" style="margin-top:0;">Choisissez votre nouveau mot de passe. Cette page s'ouvre après avoir cliqué sur le lien reçu par email.</p>
+      <div class="field"><label>Nouveau mot de passe</label><input type="password" id="recovery-pass" placeholder="Au moins 6 caractères" autocomplete="new-password"></div>
+      <div class="field"><label>Confirmer le mot de passe</label><input type="password" id="recovery-pass2" placeholder="Confirmer" autocomplete="new-password"></div>
+      <div class="resa-error" id="recovery-error"></div>
+      <div class="panel-actions">
+        <button type="button" class="btn btn-ghost btn-sm" id="recovery-back">Retour à la connexion</button>
+        <div class="right"><button type="button" class="btn btn-primary" id="recovery-btn">Enregistrer</button></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Equipment overlay -->
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="panel-head">
+      <h2 id="panel-title">Ajouter une machine</h2>
+      <button class="btn btn-ghost btn-sm" id="btn-close">Fermer</button>
+    </div>
+    <form id="form-machine">
+      <div id="admin-fields">
+        <div class="field"><label>Nom de la machine</label><input type="text" id="f-nom" required placeholder="Ex. Tracteur 6130R"></div>
+        <div class="field-row">
+          <div class="field"><label>Catégorie</label>
+            <select id="f-categorie">
+              <option>Tracteur</option><option>Moissonneuse</option><option>Pulvérisateur</option>
+              <option>Semoir</option><option>Travail du sol</option><option>Récolte / fenaison</option><option>Autre</option>
+            </select>
+          </div>
+          <div class="field"><label>Référence / n° de série</label><input type="text" id="f-reference" placeholder="Ex. TR-6130R-04"></div>
+        </div>
+        <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Informations utiles pour l'équipe…"></textarea></div>
+      </div>
+      <div id="statut-field" class="field" style="display:none;"><label>Statut manuel</label>
+        <select id="f-statut"><option value="">Aucun (dépend des réservations)</option><option value="maintenance">En maintenance</option><option value="indisponible">Indisponible</option></select>
+      </div>
+      <div id="readonly-info" style="display:none;"></div>
+
+      <div class="section-block" id="resa-section">
+        <label class="block-title">Réservations</label>
+        <div class="cal-head">
+          <button type="button" class="btn btn-ghost btn-sm" id="cal-prev">‹</button>
+          <div class="cal-title" id="cal-title"></div>
+          <button type="button" class="btn btn-ghost btn-sm" id="cal-next">›</button>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div id="resa-list" style="margin-top:0.8rem;"></div>
+        <div id="resa-form-wrap">
+          <div class="resa-form">
+            <input type="date" id="r-debut" placeholder="Date de début">
+            <input type="date" id="r-fin" placeholder="Date de fin">
+            <input type="text" id="r-client" class="full" placeholder="Nom du client">
+            <input type="text" id="r-adresse" class="full" placeholder="Adresse">
+          </div>
+          <div class="resa-error" id="resa-error"></div>
+          <button type="button" class="btn btn-primary btn-sm" id="btn-reserve" style="margin-top:0.6rem;">Réserver</button>
+        </div>
+        <div class="empty-note" id="resa-forbidden" style="display:none; padding:0.3rem 0;">Vous n'êtes pas autorisé à réserver du matériel.</div>
+      </div>
+
+      <div class="section-block" id="maint-section" style="display:none;">
+        <label class="block-title">Historique de maintenance</label>
+        <div id="maint-list"></div>
+        <div class="maint-add" id="maint-add-row">
+          <input type="date" id="maint-date">
+          <input type="text" id="maint-desc" placeholder="Description de l'intervention">
+          <button type="button" class="btn btn-sm" id="btn-maint-add">Ajouter</button>
+        </div>
+      </div>
+
+      <div class="panel-actions">
+        <button type="button" class="btn btn-danger btn-sm" id="btn-delete" style="display:none;">Supprimer la machine</button>
+        <div class="right">
+          <button type="button" class="btn btn-ghost" id="btn-cancel">Fermer</button>
+          <button type="submit" class="btn btn-primary" id="btn-save">Enregistrer</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+(function () {
+  const STATUS_LABEL = { disponible: 'Disponible', demo: 'En démonstration', maintenance: 'En maintenance', indisponible: 'Indisponible' };
+  let items = [];
+  let personnes = [];
+  let filter = 'tous';
+  let searchTerm = '';
+  let editingId = null;
+  let dbCol = null, personnesCol = null;
+  let localMode = false;
+  let currentPersonId = localStorage.getItem('parcdemo_personId') || null;
+  let reservationSubs = new Map();
+  let calDate = new Date();
+
+  const $ = (id) => document.getElementById(id);
+  const fmtDate = (iso) => { if (!iso) return '—'; const d = new Date(iso + 'T00:00:00'); return isNaN(d) ? '—' : d.toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' }); };
+  const todayISO = () => new Date().toISOString().slice(0, 10);
+  const escapeHtml = (s) => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+
+  function currentPerson() { return personnes.find(p => p.id === currentPersonId) || null; }
+  function isAdmin() { const p = currentPerson(); return !!p && p.role === 'admin'; }
+  const PERMS = [
+    { key: 'ajouterMachine', label: 'Ajouter du matériel' },
+    { key: 'modifierMachine', label: 'Modifier une machine' },
+    { key: 'definirStatut', label: 'Définir le statut' },
+    { key: 'supprimerMachine', label: 'Supprimer une machine' },
+    { key: 'ajouterMaintenance', label: 'Ajouter une maintenance' },
+    { key: 'reserver', label: 'Réserver' },
+    { key: 'annulerPropre', label: 'Annuler sa propre résa.' },
+    { key: 'annulerAutrui', label: "Annuler résa. d'un collègue" }
+  ];
+  function can(action) {
+    const p = currentPerson();
+    if (!p) return false;
+    if (p.role === 'admin') return true;
+    return !!(p.permissions && p.permissions[action]);
+  }
+  function defaultPermissions(role) { return role === 'admin' ? {} : { reserver: true, annulerPropre: true }; }
+
+  function showBanner(text) { $('banner-holder').innerHTML = '<div class="banner">' + text + '</div>'; }
+
+  function computeStatus(item) {
+    if (item.statutManuel === 'maintenance') return { key: 'maintenance', label: STATUS_LABEL.maintenance };
+    if (item.statutManuel === 'indisponible') return { key: 'indisponible', label: STATUS_LABEL.indisponible };
+    const t = todayISO();
+    const active = (item.reservations || []).find(r => r.dateDebut <= t && t <= r.dateFin);
+    if (active) return { key: 'demo', label: STATUS_LABEL.demo, reservation: active };
+    return { key: 'disponible', label: STATUS_LABEL.disponible };
+  }
+
+
+  // ---------- identity / auth (Supabase) ----------
+  const SUPABASE_URL = window.PARC_CONFIG?.supabaseUrl || '';
+  const SUPABASE_ANON_KEY = window.PARC_CONFIG?.supabaseAnonKey || '';
+  const COMPANY_NAME = window.PARC_CONFIG?.companyName || 'ALEXANDRE SA';
+  let supabase = null;
+
+  function currentPerson() { return personnes.find(p => p.id === currentPersonId) || null; }
+  function isAdmin() { const p = currentPerson(); return !!p && p.role === 'admin'; }
+
+  const PERMS = [
+    { key: 'ajouterMachine', label: 'Ajouter du matériel' },
+    { key: 'modifierMachine', label: 'Modifier une machine' },
+    { key: 'definirStatut', label: 'Définir le statut' },
+    { key: 'supprimerMachine', label: 'Supprimer une machine' },
+    { key: 'ajouterMaintenance', label: 'Ajouter une maintenance' },
+    { key: 'reserver', label: 'Réserver' },
+    { key: 'annulerPropre', label: 'Annuler sa propre résa.' },
+    { key: 'annulerAutrui', label: "Annuler résa. d'un collègue" }
+  ];
+
+  function can(action) {
+    const p = currentPerson();
+    if (!p) return false;
+    if (p.role === 'admin') return true;
+    return !!(p.permissions && p.permissions[action]);
+  }
+
+  function defaultPermissions(role) {
+    return role === 'admin' ? {} : { reserver: true, annulerPropre: true };
+  }
+
+  function showBanner(text) { $('banner-holder').innerHTML = '<div class="banner">' + text + '</div>'; }
+
+  function renderIdentityUI() {
+    const p = currentPerson();
+    if (!p) {
+      $('whoami').style.display = 'none';
+      $('id-overlay').classList.add('active');
+      $('boot-panel').style.display = 'none';
+      $('login-panel').style.display = 'block';
+    } else {
+      $('id-overlay').classList.remove('active');
+      $('whoami').style.display = 'flex';
+      $('whoami-name').textContent = p.nom || p.email || 'Utilisateur';
+      const rp = $('whoami-role');
+      rp.textContent = p.role === 'admin' ? 'Administrateur' : 'Commercial';
+      rp.className = 'role-pill' + (p.role === 'admin' ? ' admin' : '');
+    }
+    $('tab-parametres').hidden = !isAdmin();
+    if (!isAdmin() && $('view-parametres').classList.contains('active')) switchTab('dashboard');
+    $('btn-add-top').style.display = can('ajouterMachine') ? 'inline-block' : 'none';
+    $('btn-add-fab').style.display = can('ajouterMachine') ? 'inline-block' : 'none';
+  }
+
+  async function loadCurrentProfile(user) {
+    if (!user) {
+      currentPersonId = null;
+      personnes = [];
+      renderIdentityUI();
+      return;
+    }
+    const { data, error } = await supabase.from('profiles').select('*').eq('id', user.id).single();
+    if (error || !data) {
+      showBanner("Votre compte existe mais votre profil d'entreprise n'est pas encore configuré.");
+      currentPersonId = null;
+      renderIdentityUI();
+      return;
+    }
+    currentPersonId = data.id;
+    if (data.role === 'admin') {
+      const { data: allProfiles, error: allProfilesError } = await supabase
+        .from('profiles').select('*').order('nom');
+      personnes = allProfilesError ? [data] : (allProfiles || [data]);
+    } else {
+      personnes = [data];
+    }
+    renderIdentityUI();
+  }
+
+  $('login-btn').addEventListener('click', async () => {
+    const email = $('login-nom').value.trim();
+    const pass = $('login-pass').value;
+    const err = $('login-error');
+    if (!email || !pass) { err.textContent = 'Email et mot de passe requis.'; err.style.display = 'block'; return; }
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    if (error) { err.textContent = 'Email ou mot de passe incorrect.'; err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    $('login-nom').value = ''; $('login-pass').value = '';
+    await loadCurrentProfile(data.user);
+    await loadData();
+  });
+
+  $('btn-switch').addEventListener('click', async () => {
+    await supabase.auth.signOut();
+    currentPersonId = null;
+    personnes = [];
+    items = [];
+    renderIdentityUI();
+    render();
+  });
+
+  // Password recovery: send a secure email, then let Supabase create a recovery session
+  // when the user returns to this page.
+  $('show-recovery').addEventListener('click', async () => {
+    const email = $('login-nom').value.trim();
+    const err = $('login-error');
+    if (!email) {
+      err.textContent = "Saisissez votre adresse email puis cliquez sur « Mot de passe oublié ? ».";
+      err.style.display = 'block';
+      return;
+    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.origin + window.location.pathname
+    });
+    if (error) {
+      err.textContent = "Impossible d'envoyer l'email de réinitialisation. Vérifiez la configuration des URL Supabase.";
+    } else {
+      err.textContent = "Email envoyé. Consultez votre boîte mail et cliquez sur le lien pour choisir un nouveau mot de passe.";
+    }
+    err.style.display = 'block';
+  });
+
+  $('recovery-back').addEventListener('click', () => {
+    $('recovery-panel').style.display = 'none';
+    $('login-panel').style.display = 'block';
+    $('recovery-error').style.display = 'none';
+  });
+
+  $('recovery-btn').addEventListener('click', async () => {
+    const pass = $('recovery-pass').value;
+    const pass2 = $('recovery-pass2').value;
+    const err = $('recovery-error');
+    if (!pass || pass.length < 6) {
+      err.textContent = 'Le mot de passe doit contenir au moins 6 caractères.';
+      err.style.display = 'block';
+      return;
+    }
+    if (pass !== pass2) {
+      err.textContent = 'Les deux mots de passe ne correspondent pas.';
+      err.style.display = 'block';
+      return;
+    }
+    const { error } = await supabase.auth.updateUser({ password: pass });
+    if (error) {
+      err.textContent = 'Impossible de modifier le mot de passe. Le lien est peut-être expiré : demandez un nouvel email.';
+      err.style.display = 'block';
+      return;
+    }
+    err.textContent = 'Mot de passe modifié. Vous pouvez maintenant vous connecter.';
+    err.style.display = 'block';
+    $('recovery-pass').value = '';
+    $('recovery-pass2').value = '';
+    setTimeout(async () => {
+      await supabase.auth.signOut();
+      $('recovery-panel').style.display = 'none';
+      $('login-panel').style.display = 'block';
+      $('login-error').textContent = 'Mot de passe modifié avec succès. Connectez-vous avec votre nouveau mot de passe.';
+      $('login-error').style.display = 'block';
+    }, 700);
+  });
+
+  $('boot-btn').addEventListener('click', () => {
+    $('boot-error').textContent = "Le premier compte doit être créé dans Supabase Auth puis promu administrateur via le script SQL fourni.";
+    $('boot-error').style.display = 'block';
+  });
+
+  function renderPeopleTable() {
+    const table = $('people-table');
+    if (!table || !isAdmin()) return;
+    table.innerHTML = '<thead><tr><th>Nom</th><th>Rôle</th><th>Email</th><th>Gestion</th></tr></thead>';
+    const tbody = document.createElement('tbody');
+    personnes.forEach(p => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = '<td>' + escapeHtml(p.nom || '') + '</td>' +
+        '<td>' + escapeHtml(p.role === 'admin' ? 'Administrateur' : 'Commercial') + '</td>' +
+        '<td>' + escapeHtml(p.email || '') + '</td>' +
+        '<td class="perm-col">Compte géré via Supabase Auth</td>';
+      tbody.appendChild(tr);
+    });
+    table.appendChild(tbody);
+  }
+
+  // ---------- paramètres ----------
+
+  function renderPeopleTable() {
+    const table = $('people-table');
+    if (!table) return;
+    const thead = document.createElement('thead');
+    const headRow = document.createElement('tr');
+    ['Nom', 'Rôle'].forEach(t => { const th = document.createElement('th'); th.textContent = t; headRow.appendChild(th); });
+    PERMS.forEach(perm => { const th = document.createElement('th'); th.className = 'perm-col'; th.textContent = perm.label; headRow.appendChild(th); });
+    headRow.appendChild(document.createElement('th'));
+    thead.appendChild(headRow);
+
+    const tbody = document.createElement('tbody');
+    personnes.slice().sort((a, b) => a.nom.localeCompare(b.nom)).forEach(p => {
+      const admins = personnes.filter(x => x.role === 'admin');
+      const isLastAdmin = p.role === 'admin' && admins.length <= 1;
+      const tr = document.createElement('tr');
+
+      const nameCell = document.createElement('td');
+      nameCell.textContent = p.nom;
+      tr.appendChild(nameCell);
+
+      const roleCell = document.createElement('td');
+      const sel = document.createElement('select');
+      sel.className = 'role-select';
+      sel.innerHTML = '<option value="commercial">Commercial</option><option value="admin">Administrateur</option>';
+      sel.value = p.role;
+      sel.disabled = isLastAdmin;
+      sel.addEventListener('change', () => setPersonRole(p.id, sel.value));
+      roleCell.appendChild(sel);
+      tr.appendChild(roleCell);
+
+      PERMS.forEach(perm => {
+        const cell = document.createElement('td');
+        cell.className = 'perm-col';
+        const box = document.createElement('input');
+        box.type = 'checkbox';
+        box.className = 'perm-check';
+        box.checked = p.role === 'admin' ? true : !!(p.permissions && p.permissions[perm.key]);
+        box.disabled = p.role === 'admin';
+        box.addEventListener('change', () => setPersonPermission(p.id, perm.key, box.checked));
+        cell.appendChild(box);
+        tr.appendChild(cell);
+      });
+
+      const actionCell = document.createElement('td');
+      const resetBtn = document.createElement('button');
+      resetBtn.className = 'btn btn-ghost btn-sm';
+      resetBtn.textContent = 'Mot de passe';
+      resetBtn.style.marginRight = '0.3rem';
+      resetBtn.addEventListener('click', () => resetPersonPassword(p.id, p.nom));
+      actionCell.appendChild(resetBtn);
+      const delBtn = document.createElement('button');
+      delBtn.className = 'btn btn-ghost btn-sm';
+      delBtn.textContent = 'Retirer';
+      delBtn.disabled = isLastAdmin;
+      delBtn.addEventListener('click', () => removePerson(p.id));
+      actionCell.appendChild(delBtn);
+      tr.appendChild(actionCell);
+
+      tbody.appendChild(tr);
+    });
+
+    table.innerHTML = '';
+    table.appendChild(thead);
+    table.appendChild(tbody);
+  }
+
+  function setPersonRole_LEGACY(id, role) {
+    if (localMode) { const p = personnes.find(x => x.id === id); if (p) { p.role = role; if (role === 'commercial' && !p.permissions) p.permissions = defaultPermissions('commercial'); } renderPeopleTable(); renderIdentityUI(); return; }
+    const p = personnes.find(x => x.id === id);
+    const patch = { role };
+    if (role === 'commercial' && (!p || !p.permissions)) patch.permissions = defaultPermissions('commercial');
+    personnesCol.doc(id).update(patch).catch(err => console.error(err));
+  }
+  function setPersonPermission_LEGACY(id, key, value) {
+    if (localMode) { const p = personnes.find(x => x.id === id); if (p) p.permissions = Object.assign({}, p.permissions, { [key]: value }); renderPeopleTable(); return; }
+    const p = personnes.find(x => x.id === id);
+    const newPerms = Object.assign({}, p && p.permissions, { [key]: value });
+    personnesCol.doc(id).update({ permissions: newPerms }).catch(err => console.error(err));
+  }
+  function removePerson_LEGACY(id) {
+    if (!confirm('Retirer cette personne de l\'équipe ?')) return;
+    if (localMode) { personnes = personnes.filter(x => x.id !== id); renderPeopleTable(); return; }
+    personnesCol.doc(id).delete().catch(err => console.error(err));
+  }
+  async function resetPersonPassword_LEGACY(id, nom) {
+    const pw = window.prompt('Nouveau mot de passe pour ' + nom + ' :');
+    if (!pw) return;
+    const passwordHash = await hashPassword(pw);
+    if (localMode) { const p = personnes.find(x => x.id === id); if (p) p.passwordHash = passwordHash; return; }
+    personnesCol.doc(id).update({ passwordHash }).catch(err => console.error(err));
+  }
+
+  // ---------- tabs ----------
+  function switchTab(view) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.view === view));
+    document.querySelectorAll('.view').forEach(v => v.classList.toggle('active', v.id === 'view-' + view));
+  }
+  document.querySelectorAll('.tab-btn').forEach(btn => btn.addEventListener('click', () => switchTab(btn.dataset.view)));
+
+  // ---------- filters ----------
+  document.querySelectorAll('.chip').forEach(chip => chip.addEventListener('click', () => {
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active'); filter = chip.dataset.filter; renderList();
+  }));
+  $('search').addEventListener('input', (e) => { searchTerm = e.target.value; renderList(); });
+
+  // ---------- rendering ----------
+  function render() { renderDashboard(); renderList(); renderPlanning(); renderPeopleTable(); }
+
+  function renderPlanning() {
+    const board = $('planning-board');
+    board.innerHTML = '';
+    const sorted = items.slice().sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
+    if (!sorted.length) { board.innerHTML = '<div class="empty-note">Aucune machine enregistrée.</div>'; return; }
+    const t = todayISO();
+    sorted.forEach(item => {
+      const st = computeStatus(item);
+      const col = document.createElement('div');
+      col.className = 'planning-col';
+      const head = document.createElement('div');
+      head.className = 'planning-head';
+      head.innerHTML = '<div class="p-name">' + escapeHtml(item.nom) + '</div><span class="badge badge-' + st.key + '">' + st.label + '</span>';
+      head.addEventListener('click', () => openMachine(item.id));
+      col.appendChild(head);
+      const resas = (item.reservations || []).filter(r => r.dateFin >= t).sort((a, b) => a.dateDebut.localeCompare(b.dateDebut));
+      if (!resas.length) {
+        const empty = document.createElement('div');
+        empty.className = 'empty-note'; empty.style.padding = '0.2rem 0';
+        empty.textContent = 'Aucune réservation à venir.';
+        col.appendChild(empty);
+      } else {
+        resas.forEach(r => {
+          const b = document.createElement('div');
+          b.className = 'bulle';
+          b.innerHTML = '<div class="b-dates">' + fmtDate(r.dateDebut) + ' → ' + fmtDate(r.dateFin) + '</div>' +
+            '<div class="b-client">' + escapeHtml(r.client) + '</div>' +
+            '<div class="b-adresse">' + escapeHtml(r.adresse || '—') + '</div>';
+          col.appendChild(b);
+        });
+      }
+      board.appendChild(col);
+    });
+  }
+
+  function renderDashboard() {
+    $('stat-total').textContent = items.length;
+    const statuses = items.map(computeStatus);
+    $('stat-dispo').textContent = statuses.filter(s => s.key === 'disponible').length;
+    $('stat-demo').textContent = statuses.filter(s => s.key === 'demo').length;
+    $('stat-maint').textContent = statuses.filter(s => s.key === 'maintenance' || s.key === 'indisponible').length;
+
+    const horizon = new Date(); horizon.setDate(horizon.getDate() + 30);
+    const horizonISO = horizon.toISOString().slice(0, 10);
+    const t = todayISO();
+    const rows = [];
+    items.forEach(item => (item.reservations || []).forEach(r => {
+      if (r.dateFin >= t && r.dateDebut <= horizonISO) rows.push({ item, r });
+    }));
+    rows.sort((a, b) => a.r.dateFin.localeCompare(b.r.dateFin));
+    const tbody = $('returns-body');
+    tbody.innerHTML = '';
+    rows.forEach(({ item, r }) => {
+      const tr = document.createElement('tr');
+      tr.style.cursor = 'pointer';
+      tr.innerHTML = '<td>' + escapeHtml(item.nom) + '</td><td>' + escapeHtml(r.client) + '</td><td>' + escapeHtml(r.adresse || '—') + '</td><td>' + fmtDate(r.dateDebut) + ' → ' + fmtDate(r.dateFin) + '</td>';
+      tr.addEventListener('click', () => openMachine(item.id));
+      tbody.appendChild(tr);
+    });
+    $('returns-empty').style.display = rows.length ? 'none' : 'block';
+  }
+
+  function renderList() {
+    const list = $('equip-list');
+    list.innerHTML = '';
+    const term = searchTerm.trim().toLowerCase();
+    const filtered = items.filter(i => {
+      const st = computeStatus(i).key;
+      if (filter !== 'tous' && st !== filter) return false;
+      if (!term) return true;
+      return [i.nom, i.reference, i.categorie].some(v => (v || '').toLowerCase().includes(term));
+    }).slice().sort((a, b) => (a.nom || '').localeCompare(b.nom || ''));
+
+    filtered.forEach(item => {
+      const st = computeStatus(item);
+      const row = document.createElement('div');
+      row.className = 'equip-row';
+      const metaParts = [item.categorie, item.reference ? 'Réf. ' + item.reference : null].filter(Boolean);
+      let dateLine = '';
+      if (st.key === 'demo' && st.reservation) dateLine = escapeHtml(st.reservation.client) + ' · jusqu\'au ' + fmtDate(st.reservation.dateFin);
+      row.innerHTML =
+        '<div class="equip-main"><div class="equip-name">' + escapeHtml(item.nom) + '</div><div class="equip-meta">' + escapeHtml(metaParts.join(' · ')) + '</div></div>' +
+        '<div class="equip-side"><span class="badge badge-' + st.key + '">' + st.label + '</span><div class="equip-date">' + dateLine + '</div></div>';
+      row.addEventListener('click', () => openMachine(item.id));
+      list.appendChild(row);
+    });
+    $('list-empty').style.display = filtered.length ? 'none' : 'block';
+  }
+
+  // ---------- calendar ----------
+  function renderCalendar(reservations) {
+    const year = calDate.getFullYear(), month = calDate.getMonth();
+    $('cal-title').textContent = calDate.toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+    const grid = $('cal-grid');
+    grid.innerHTML = '';
+    ['Lu', 'Ma', 'Me', 'Je', 'Ve', 'Sa', 'Di'].forEach(d => { const el = document.createElement('div'); el.className = 'cal-dow'; el.textContent = d; grid.appendChild(el); });
+    const first = new Date(year, month, 1);
+    let startOffset = first.getDay() - 1; if (startOffset < 0) startOffset = 6;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const t = todayISO();
+    for (let i = 0; i < startOffset; i++) grid.appendChild(document.createElement('div'));
+    for (let d = 1; d <= daysInMonth; d++) {
+      const iso = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+      const resa = reservations.find(r => r.dateDebut <= iso && iso <= r.dateFin);
+      const cell = document.createElement('div');
+      cell.className = 'cal-cell in-month' + (iso === t ? ' today' : '') + (resa ? ' reserved' : '');
+      cell.textContent = d;
+      if (resa) cell.title = resa.client + (resa.adresse ? ' — ' + resa.adresse : '');
+      grid.appendChild(cell);
+    }
+  }
+  $('cal-prev').addEventListener('click', () => { calDate.setMonth(calDate.getMonth() - 1); renderCalendar(currentReservations()); });
+  $('cal-next').addEventListener('click', () => { calDate.setMonth(calDate.getMonth() + 1); renderCalendar(currentReservations()); });
+  function currentReservations() { const item = items.find(i => i.id === editingId); return item ? (item.reservations || []) : []; }
+
+  function renderResaList(reservations) {
+    const wrap = $('resa-list');
+    wrap.innerHTML = '';
+    const t = todayISO();
+    const sorted = reservations.slice().filter(r => r.dateFin >= t).sort((a, b) => a.dateDebut.localeCompare(b.dateDebut));
+    if (!sorted.length) { wrap.innerHTML = '<div class="empty-note" style="padding:0.3rem 0;">Aucune réservation à venir.</div>'; return; }
+    const p = currentPerson();
+    sorted.forEach(r => {
+      const canDelete = can('annulerAutrui') || (can('annulerPropre') && p && r.creePar === p.nom);
+      const div = document.createElement('div');
+      div.className = 'resa-item';
+      div.innerHTML = '<div class="r-top"><span>' + escapeHtml(r.client) + '</span><span>' + fmtDate(r.dateDebut) + ' → ' + fmtDate(r.dateFin) + '</span></div>' +
+        '<div class="r-meta">' + escapeHtml(r.adresse || '—') + ' · réservé par ' + escapeHtml(r.creePar || '—') + '</div>';
+      if (canDelete) {
+        const btn = document.createElement('button');
+        btn.className = 'btn btn-ghost btn-sm'; btn.textContent = 'Annuler'; btn.style.marginTop = '0.3rem';
+        btn.addEventListener('click', () => deleteReservation(editingId, r.id));
+        div.appendChild(btn);
+      }
+      wrap.appendChild(div);
+    });
+  }
+
+  // ---------- modal ----------
+  function resetForm() {
+    $('form-machine').reset();
+    $('maint-list').innerHTML = '';
+    $('btn-delete').style.display = 'none';
+    $('resa-error').style.display = 'none';
+  }
+
+  function openAdd() {
+    if (!can('ajouterMachine')) return;
+    editingId = null;
+    resetForm();
+    $('panel-title').textContent = 'Ajouter une machine';
+    $('admin-fields').style.display = 'block';
+    $('statut-field').style.display = 'none';
+    $('readonly-info').style.display = 'none';
+    $('resa-section').style.display = 'none';
+    $('maint-section').style.display = 'none';
+    $('overlay').classList.add('active');
+  }
+
+  function openMachine(id) {
+    const item = items.find(i => i.id === id);
+    if (!item) return;
+    editingId = id;
+    calDate = new Date();
+    resetForm();
+    $('panel-title').textContent = item.nom;
+    $('resa-section').style.display = 'block';
+
+    const canEditInfo = can('modifierMachine');
+    const canSetStatus = can('definirStatut');
+    const canDeleteMachine = can('supprimerMachine');
+    const canAddMaint = can('ajouterMaintenance');
+    const canReserve = can('reserver');
+
+    if (canEditInfo) {
+      $('admin-fields').style.display = 'block';
+      $('readonly-info').style.display = 'none';
+      $('f-nom').value = item.nom || '';
+      $('f-categorie').value = item.categorie || 'Tracteur';
+      $('f-reference').value = item.reference || '';
+      $('f-notes').value = item.notes || '';
+    } else {
+      $('admin-fields').style.display = 'none';
+      $('readonly-info').style.display = 'block';
+      const metaParts = [item.categorie, item.reference ? 'Réf. ' + item.reference : null].filter(Boolean);
+      $('readonly-info').innerHTML = '<p class="block-sub" style="margin-top:0;">' + escapeHtml(metaParts.join(' · ')) + '</p>' + (item.notes ? '<p style="font-size:0.85rem;">' + escapeHtml(item.notes) + '</p>' : '');
+    }
+
+    if (canSetStatus) { $('statut-field').style.display = 'block'; $('f-statut').value = item.statutManuel || ''; }
+    else { $('statut-field').style.display = 'none'; }
+
+    $('btn-delete').style.display = canDeleteMachine ? 'inline-block' : 'none';
+
+    if (canAddMaint) { $('maint-section').style.display = 'block'; $('maint-add-row').style.display = 'flex'; }
+    else { $('maint-section').style.display = (item.maintenance || []).length ? 'block' : 'none'; $('maint-add-row').style.display = 'none'; }
+
+    $('resa-form-wrap').style.display = canReserve ? 'block' : 'none';
+    $('resa-forbidden').style.display = canReserve ? 'none' : 'block';
+
+    renderMaintList(item.maintenance || []);
+    renderCalendar(item.reservations || []);
+    renderResaList(item.reservations || []);
+    $('overlay').classList.add('active');
+  }
+
+  function renderMaintList(entries) {
+    const wrap = $('maint-list');
+    wrap.innerHTML = '';
+    if (!entries.length) { wrap.innerHTML = '<div class="empty-note" style="padding:0.3rem 0;">Aucune intervention enregistrée.</div>'; return; }
+    entries.slice().sort((a, b) => (b.date || '').localeCompare(a.date || '')).forEach(e => {
+      const row = document.createElement('div'); row.className = 'maint-entry';
+      row.innerHTML = '<div class="maint-date">' + fmtDate(e.date) + '</div><div>' + escapeHtml(e.description) + '</div>';
+      wrap.appendChild(row);
+    });
+  }
+
+  function closeModal() { $('overlay').classList.remove('active'); }
+  $('btn-add-top').addEventListener('click', openAdd);
+  $('btn-add-fab').addEventListener('click', openAdd);
+  $('btn-close').addEventListener('click', closeModal);
+  $('btn-cancel').addEventListener('click', closeModal);
+  $('overlay').addEventListener('click', (e) => { if (e.target.id === 'overlay') closeModal(); });
+
+  $('btn-maint-add').addEventListener('click', () => {
+    if (!editingId || !can('ajouterMaintenance')) return;
+    const desc = $('maint-desc').value.trim();
+    if (!desc) return;
+    const item = items.find(i => i.id === editingId);
+    const entries = (item.maintenance || []).concat([{ id: (crypto.randomUUID ? crypto.randomUUID() : String(Date.now())), date, description: desc }]);
+    item.maintenance = entries;
+    renderMaintList(entries);
+    $('maint-desc').value = ''; $('maint-date').value = '';
+    persist(editingId, { maintenance: entries });
+  });
+
+  $('btn-reserve').addEventListener('click', () => {
+    if (!editingId || !can('reserver')) return;
+    const debut = $('r-debut').value, fin = $('r-fin').value, client = $('r-client').value.trim(), adresse = $('r-adresse').value.trim();
+    const err = $('resa-error');
+    if (!debut || !fin || !client) { err.textContent = 'Merci de renseigner les dates et le nom du client.'; err.style.display = 'block'; return; }
+    if (fin < debut) { err.textContent = 'La date de fin doit être après la date de début.'; err.style.display = 'block'; return; }
+    const item = items.find(i => i.id === editingId);
+    const overlap = (item.reservations || []).find(r => debut <= r.dateFin && r.dateDebut <= fin);
+    if (overlap) { err.textContent = 'Ces dates chevauchent une réservation existante pour ' + overlap.client + '.'; err.style.display = 'block'; return; }
+    err.style.display = 'none';
+    const p = currentPerson();
+    const data = { dateDebut: debut, dateFin: fin, client, adresse, creePar: p ? p.nom : '—', createdAt: Date.now() };
+    createReservation(editingId, data);
+    $('r-debut').value = ''; $('r-fin').value = ''; $('r-client').value = ''; $('r-adresse').value = '';
+  });
+
+  $('btn-delete').addEventListener('click', () => {
+    if (!editingId || !can('supprimerMachine')) return;
+    removeItem(editingId);
+    closeModal();
+  });
+
+  $('f-statut').addEventListener('change', () => {
+    if (!editingId || !can('definirStatut')) return;
+    persist(editingId, { statutManuel: $('f-statut').value || null });
+  });
+
+  $('form-machine').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const data = {
+      nom: $('f-nom').value.trim(),
+      categorie: $('f-categorie').value,
+      reference: $('f-reference').value.trim(),
+      notes: $('f-notes').value.trim(),
+      updatedAt: Date.now()
+    };
+    if (!data.nom) return;
+    if (editingId) {
+      if (!can('modifierMachine')) { closeModal(); return; }
+      persist(editingId, data);
+    } else {
+      if (!can('ajouterMachine')) { closeModal(); return; }
+      createItem(data);
+    }
+    closeModal();
+  });
+
+
+  // ---------- persistence: équipements ----------
+  async function createItem(data) {
+    data.maintenance = [];
+    data.reservations = [];
+    const { error } = await supabase.from('equipements').insert(data);
+    if (error) { console.error(error); showBanner("Impossible d'ajouter la machine."); }
+    await loadData();
+  }
+
+  async function persist(id, patch) {
+    const { error } = await supabase.from('equipements').update(patch).eq('id', id);
+    if (error) { console.error(error); showBanner("Impossible d'enregistrer les modifications."); }
+    await loadData();
+  }
+
+  async function removeItem(id) {
+    const { error } = await supabase.from('equipements').delete().eq('id', id);
+    if (error) { console.error(error); showBanner("Impossible de supprimer la machine."); }
+    await loadData();
+  }
+
+  // ---------- persistence: réservations ----------
+  async function createReservation(equipId, data) {
+    data.equipement_id = equipId;
+    const { error } = await supabase.from('reservations').insert(data);
+    if (error) { console.error(error); showBanner("Impossible de créer la réservation."); }
+    await loadData();
+  }
+
+  async function deleteReservation(equipId, resaId) {
+    const { error } = await supabase.from('reservations').delete().eq('id', resaId);
+    if (error) { console.error(error); showBanner("Impossible d'annuler la réservation."); }
+    await loadData();
+  }
+
+  async function loadData() {
+    if (!supabase) return;
+    const { data: eq, error: eqErr } = await supabase.from('equipements').select('*').order('nom');
+    if (eqErr) { console.error(eqErr); showBanner("Impossible de charger le parc matériel."); return; }
+
+    const { data: rs, error: rsErr } = await supabase.from('reservations').select('*').order('date_debut');
+    if (rsErr) { console.error(rsErr); showBanner("Impossible de charger les réservations."); return; }
+
+    items = (eq || []).map(e => Object.assign({}, e, {
+      id: e.id,
+      reservations: (rs || []).filter(r => r.equipement_id === e.id).map(r => ({
+        id: r.id,
+        dateDebut: r.date_debut,
+        dateFin: r.date_fin,
+        client: r.client,
+        adresse: r.adresse,
+        creePar: r.cree_par
+      })),
+      maintenance: e.maintenance || []
+    }));
+    render();
+    renderIdentityUI();
+  }
+
+  // ---------- boot ----------
+
+
+  async function boot() {
+    if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
+      showBanner("Configuration requise : renseignez SUPABASE_URL et SUPABASE_ANON_KEY dans config.js.");
+      $('id-overlay').classList.add('active');
+      return;
+    }
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    // Listen before reading the session so password-recovery redirects are caught.
+    supabase.auth.onAuthStateChange((_event, session2) => {
+      if (_event === 'PASSWORD_RECOVERY') {
+        setTimeout(() => {
+          $('login-panel').style.display = 'none';
+          $('recovery-panel').style.display = 'block';
+          $('recovery-error').style.display = 'none';
+          $('recovery-pass').focus();
+        }, 0);
+        return;
+      }
+      setTimeout(async () => {
+        await loadCurrentProfile(session2?.user || null);
+        if (session2?.user) await loadData();
+      }, 0);
+    });
+
+    const { data: { session } } = await supabase.auth.getSession();
+    await loadCurrentProfile(session?.user || null);
+    if (session?.user) await loadData();
+  }
+
+  document.title = COMPANY_NAME + ' — Gestion du parc de démo';
+  boot();
+})();
+</script>
+</body>
+</html>

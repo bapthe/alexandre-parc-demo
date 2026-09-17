@@ -1,0 +1,13 @@
+CHECKLIST — ALEXANDRE SA / PARC DE DEMO
+
+[ ] Créer le projet Supabase
+[ ] Exécuter supabase-schema.sql
+[ ] Créer Baptiste dans Supabase Auth
+[ ] Créer Judicael dans Supabase Auth
+[ ] Ajouter les deux profils avec role = admin
+[ ] Créer les comptes des commerciaux
+[ ] Copier config.example.js -> config.js
+[ ] Renseigner URL Supabase + clé anon
+[ ] Publier sur Vercel ou Netlify
+[ ] Ajouter l'URL finale dans Supabase Authentication > URL Configuration
+[ ] Tester connexion, ajout machine, réservation et planning
