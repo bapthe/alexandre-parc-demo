@@ -442,33 +442,6 @@
   const COMPANY_NAME = window.PARC_CONFIG?.companyName || 'ALEXANDRE SA';
   let supabase = null;
 
-  function currentPerson() { return personnes.find(p => p.id === currentPersonId) || null; }
-  function isAdmin() { const p = currentPerson(); return !!p && p.role === 'admin'; }
-
-  const PERMS = [
-    { key: 'ajouterMachine', label: 'Ajouter du matériel' },
-    { key: 'modifierMachine', label: 'Modifier une machine' },
-    { key: 'definirStatut', label: 'Définir le statut' },
-    { key: 'supprimerMachine', label: 'Supprimer une machine' },
-    { key: 'ajouterMaintenance', label: 'Ajouter une maintenance' },
-    { key: 'reserver', label: 'Réserver' },
-    { key: 'annulerPropre', label: 'Annuler sa propre résa.' },
-    { key: 'annulerAutrui', label: "Annuler résa. d'un collègue" }
-  ];
-
-  function can(action) {
-    const p = currentPerson();
-    if (!p) return false;
-    if (p.role === 'admin') return true;
-    return !!(p.permissions && p.permissions[action]);
-  }
-
-  function defaultPermissions(role) {
-    return role === 'admin' ? {} : { reserver: true, annulerPropre: true };
-  }
-
-  function showBanner(text) { $('banner-holder').innerHTML = '<div class="banner">' + text + '</div>'; }
-
   function renderIdentityUI() {
     const p = currentPerson();
     if (!p) {
